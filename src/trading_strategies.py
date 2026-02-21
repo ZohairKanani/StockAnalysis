@@ -1,8 +1,9 @@
+import os
 import pandas as pd
 from data_fetch import fetch_sp500_data
 
 
-def momentum_strategy(stocks_df, lookback=126, lag=21, num_stocks=10):
+def momentum_strategy(stocks_df, lookback=12, lag=1, num_stocks=10):
     """
     Implements a momentum trading strategy based on close-to-close returns.
     
@@ -17,9 +18,9 @@ def momentum_strategy(stocks_df, lookback=126, lag=21, num_stocks=10):
     stocks_df : pandas.DataFrame
         Multi-level DataFrame with stock price data
     lookback : int
-        Number of days to look back for momentum calculation (default: 126)
+        Number of months to look back for momentum calculation (default: 12)
     lag : int
-        Number of days to hold out/lag (default: 21)
+        Number of months to hold out/lag (default: 1)
     num_stocks : int
         Number of stocks to go long and short (default: 10)
     
@@ -51,8 +52,8 @@ def momentum_strategy(stocks_df, lookback=126, lag=21, num_stocks=10):
     print("\n" + "="*60)
     print("MOMENTUM STRATEGY RESULTS")
     print("="*60)
-    print(f"Lookback Period: {lookback} days")
-    print(f"Lag Period: {lag} days")
+    print(f"Lookback Period: {lookback} months")
+    print(f"Lag Period: {lag} months")
     print(f"Number of Positions: {num_stocks}")
     print("\n")
     
@@ -89,9 +90,11 @@ def main():
         print("Exiting...")
         return
     
-    # Fetch data
-    print("\nFetching S&P 500 data...")
-    data = fetch_sp500_data(save_to_file=False)
+    # Fetch data (use monthly data and START_DATE/END_DATE env vars)
+    print("\nFetching S&P 500 monthly data...")
+    start = os.environ.get('START_DATE')
+    end = os.environ.get('END_DATE')
+    data = fetch_sp500_data(start=start, end=end, interval='1mo', save_to_file=False)
     
     if choice == '1':
         # Get parameters from user
